@@ -9,6 +9,17 @@ if [ -d $DEVENV/lider ]; then
 	git pull
 else
 	git config --global http.sslVerify false
-	git clone git@github.com:Pardus-Kurumsal/lider.git
+	git clone https://github.com/Pardus-Kurumsal/lider.git
 fi
+
+
+cd $DEVENV/lider
+
+mvn clean install -DskipTests
+
+
+if [ -d /home/developer/.eclipse ]; then
+  sudo chown developer:developer /home/developer/.eclipse
+fi
+exec /opt/eclipse/eclipse
 

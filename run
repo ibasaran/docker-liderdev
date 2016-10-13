@@ -1,0 +1,40 @@
+#!/bin/bash
+
+cd $DEVENV 
+
+if [ -d $DEVENV/lider ]; then
+	if [ $BUILD_PROJECTS == "true" ]; then
+		git pull
+	fi
+else
+	git config --global http.sslVerify false
+	if [ $USE_SSH_FOR_GIT == "true" ]; then
+		git clone git@github.com:Pardus-Kurumsal/lider.git
+		git clone git@github.com:Pardus-Kurumsal/lider-console.git
+	else
+		#git clone https://github.com/Pardus-Kurumsal/lider.git
+		#git clone https://github.com/Pardus-Kurumsal/lider-console.git
+		echo "HOLAAA"
+	fi
+fi
+
+cd $DEVENV/lider
+
+if [ $BUILD_PROJECTS == "true" ]; then
+	mvn clean install -DskipTests
+fi
+
+cd $DEVENV/lider-console/scripts
+
+if [ $BUILD_PROJECTS == "true" ]; then
+	chmod +x build-lider-console.sh
+	./build-lider-console.sh
+fi
+
+if [ -d /home/lider/.eclipse ]; then
+	sudo chown lider:lider /home/lider/.eclipse
+fi
+
+if [ $AUTO_RUN_ECLIPSE == "true" ]; then
+	exec /opt/eclipse/eclipse
+fi

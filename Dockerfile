@@ -10,6 +10,7 @@ RUN	set -x; \
 	wget \
 	ssh \
 	sudo
+
 RUN apt-get update && apt-get install -y libgtk2.0-0 libcanberra-gtk-module
 
 RUN set -x; \
@@ -29,13 +30,21 @@ RUN set -x; \
     tar -xf /tmp/eclipse.tar.gz -C /opt && \
     rm /tmp/eclipse.tar.gz
 
+RUN mkdir -p /home/lider
+
 ENV MVN_HOME /opt/apache-maven-3.3.9
 
 ENV JAVA_HOME /usr/lib/jvm/jdk-8-oracle-x64
 
 ENV PATH	/opt/apache-maven-3.3.9/bin:$PATH
 
-ENV DEVENV	/home/developer
+ENV DEVENV	/home/lider
+
+ENV PULL_PROJECTS "true"
+ENV BUILD_PROJECTS "true"
+ENV AUTO_RUN_ECLIPSE "true"
+ENV CLONE_PROJECTS "https://github.com/Pardus-Kurumsal/lider.git & https://github.com/Pardus-Kurumsal/lider-console.git"
+ENV USE_SSH_FOR_GIT "true"
 
 RUN ln -s /opt/apache-maven-3.3.9/bin/mvn /usr/local/bin/mvn
 
@@ -43,29 +52,21 @@ RUN mvn -version
 
 RUN java -version
 
-ADD updategit /usr/local/bin/updategit
+ADD run /usr/local/bin/run
 
-RUN chmod +x /usr/local/bin/updategit
+RUN chmod +x /usr/local/bin/run
 
-RUN mkdir -p /home/developer && \
-	echo "developer:x:1000:1000:Developer,,,:/home/developer:/bin/bash" >> /etc/passwd && \
-	echo "developer:x:1000:" >> /etc/group && \
-	echo "developer ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/developer && \
-	chmod 0440 /etc/sudoers.d/developer && \
-	chown developer:developer -R /home/developer && \
+RUN mkdir -p /home/lider && \
+	echo "lider:x:1000:1000:Developer,,,:/home/lider:/bin/bash" >> /etc/passwd && \
+	echo "lider:x:1000:" >> /etc/group && \
+	echo "lider ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/lider && \
+	chmod 0440 /etc/sudoers.d/lider && \
+	chown lider:lider -R /home/lider && \
 	chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo
 
-USER developer
 
-WORKDIR /home/developer
+USER lider
 
-CMD bash -C 'updategit';'bash'
+WORKDIR /home/lider
 
-
-
-
-
-
-
-
-
+CMD bash -C 'run';'bash'
